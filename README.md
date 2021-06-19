@@ -33,7 +33,7 @@ Basic usage example below.
 Since the example is set to only 1kB of data per file, the code results in 2 log files. `log.csv` will always contain the most recent data, and the subsequent files (`log_1.csv` and so on) will have older data.
 
 ```python
-#!/usr/bin/env python3
+#!/usr/bin/python3
 
 from csv_logger import CsvLogger
 import logging
