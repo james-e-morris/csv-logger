@@ -4,17 +4,24 @@ from csv_logger import CsvLogger
 import logging
 from time import sleep
     
-LOG_FILE_NAME = 'log.csv'
-LOG_LEVEL = logging.INFO
-LOG_FORMAT = '%(asctime)s,%(message)s'
-LOG_DATE_FORMAT = '%Y/%m/%d %H:%M:%S'
-LOG_MAX_SIZE = 1024 # 1 kilobyte
-LOG_MAX_FILES = 4 # 4 rotating files
-LOG_HEADER = ['date', 'value_1', 'value_2']
+filename = 'log.csv'
+level = logging.INFO
+fmt = '%(asctime)s,%(message)s'
+datefmt = '%Y/%m/%d %H:%M:%S'
+max_size = 1024 # 1 kilobyte
+max_files = 4 # 4 rotating files
+header = ['date', 'value_1', 'value_2']
 
 # Creat logger with csv rotating handler
-csvlogger = CsvLogger(LOG_FILE_NAME, LOG_LEVEL, LOG_FORMAT, LOG_DATE_FORMAT,
-    LOG_MAX_SIZE, LOG_MAX_FILES, LOG_HEADER)
+csvlogger = CsvLogger(
+    filename=filename,
+    level=level,
+    fmt=fmt,
+    datefmt=datefmt,
+    max_size=max_size,
+    max_files=max_files,
+    header=header
+    )
 
 # Log some records
 for i in range(10):
