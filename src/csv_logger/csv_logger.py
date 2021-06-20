@@ -20,7 +20,7 @@ class CsvFormatter(logging.Formatter):
 class CsvRotatingFileHandler(RotatingFileHandler):
 
     def __init__(self, fmt, datefmt, filename, max_size, max_files, header=None):
-        handler = RotatingFileHandler.__init__(self, filename, maxBytes=max_size, backupCount=max_files)
+        RotatingFileHandler.__init__(self, filename, maxBytes=max_size, backupCount=max_files)
         self.formatter = CsvFormatter(fmt, datefmt)
         # Format header string if needed
         self._header = header and self.formatter.format_msg(header)
@@ -31,7 +31,7 @@ class CsvRotatingFileHandler(RotatingFileHandler):
         return '{}_{:0{}d}.csv'.format(s[0], int(s[-1]), self.backupCount // 10 + 1)
 
     def doRollover(self):
-        '''Apped header string to each log file'''
+        ''' Prepend header string to each log file'''
         RotatingFileHandler.doRollover(self)
         if self._header is None:
             return
@@ -44,11 +44,11 @@ class CsvLogger(logging.Logger):
     def __init__(self, 
                 filename: str,
                 level           = logging.INFO,
-                fmt: str        = '%(asctime)s,%(message)s', # Log record format can use: asctime, levelname
+                fmt: str        = '%(asctime)s,%(message)s',
                 datefmt: str    = '%Y/%m/%d %H:%M:%S',
-                max_size: int   = 10485760, # Max size of each log file in bytes, default 10MB
-                max_files: int  = 10, # Max file count, default 10
-                header          = None # Note that header will only appear in the rotated files (that ends with _1 _2..) 
+                max_size: int   = 10485760,
+                max_files: int  = 10,
+                header          = None
                 ):
         """logger class to perform the csv logging
 
