@@ -20,10 +20,17 @@ class CsvFormatter(logging.Formatter):
 class CsvRotatingFileHandler(RotatingFileHandler):
 
     def __init__(self, fmt, datefmt, filename, max_size, max_files, header=None):
+        # Format header string if needed
+        self._header = header and CsvFormatter(fmt, datefmt).format_msg(header)
+        # check if file exists
+        self.file_pre_exists = path.exists(filename)
+        # call parent file handler __init__
         RotatingFileHandler.__init__(self, filename, maxBytes=max_size, backupCount=max_files)
         self.formatter = CsvFormatter(fmt, datefmt)
-        # Format header string if needed
-        self._header = header and self.formatter.format_msg(header)
+        # Write the header if delay is False and a file stream was created.
+        if self.stream is not None and not self.file_pre_exists:
+            self.stream.write('%s\n' % self._header)
+        
 
     def rotation_filename(self, default_name):
         '''Make log files counter before the .csv extension'''
