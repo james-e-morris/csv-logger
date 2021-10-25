@@ -2,6 +2,8 @@
 
 Simple class to log to csv using the logging rotating handler, output is a rolling csv log
 
+![csv-logger](csv-logger.png)
+
 Description
 -----------
 This library allows you to easily log information to CSV file format, in the same fashion as the logging package. This allows you to generate a rolling set of csv logs with a maximum  file size and file count.
