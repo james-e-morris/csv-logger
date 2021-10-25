@@ -2,7 +2,7 @@
 
 Simple class to log to csv using the logging rotating handler, output is a rolling csv log
 
-![csv-logger](csv-logger.png)
+![csv-logger](https://github.com/Morrious/csv-logger/blob/prod/csv-logger.png?raw=true)
 
 Description
 -----------
