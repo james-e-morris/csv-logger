@@ -149,7 +149,7 @@ date,value_1,value_2
 ```
 Author
 -------
-* [James Morris](https://morrisjam.es)
+* James Morris (https://james.pizza)
 
 License
 -------
