@@ -1,5 +1,7 @@
 # csv-logger
 
+[![Publish to PyPI](https://github.com/morrious/csv-logger/actions/workflows/python-publish.yml/badge.svg)](https://pypi.org/project/csv-logger/) [![Downloads](https://pepy.tech/badge/csv-logger)](https://pepy.tech/project/csv-logger)
+
 Simple class to log to csv using the logging rotating handler, output is a rolling csv log
 
 ![csv-logger](https://github.com/Morrious/csv-logger/blob/prod/csv-logger.png?raw=true)
