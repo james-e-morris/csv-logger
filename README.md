@@ -14,10 +14,12 @@ Inputs:
 
 * filename
     * main log file name or path. if path, will create subfolders as needed
+* name
+    * logging name for logs. if None, filename is used. default None
 * level
 	* logging level for logs, default INFO
 * fmt
-	* output format, default '%(asctime)s,%(message)s', accepts 'asctime' 'message' 'levelname'
+	* output format, default '%(asctime)s,%(message)s', accepts 'asctime' 'message' 'levelname' 'name'
 * datefmt
 	* date format for first column of logs, default '%Y/%m/%d %H:%M:%S'
 * max_size
