@@ -15,9 +15,13 @@ Inputs:
 * filename
     * main log file name or path. if path, will create subfolders as needed
 * level
-	* logging level for logs, default `INFO`
+	* logging level for logs, below which the logs will not be written to file. default `INFO`
+* add_level_names
+    * list fo strings, adds additional logging levels for custom log tagging. default: `[]`
+* add_level_nums
+    * assigns specific nums to `add_level_names`. default if None provided: `[100,99,98,..]`
 * fmt
-	* output format, default `%(asctime)s,%(message)s`, accepts:
+	* output format. default `%(asctime)s,%(message)s`. accepts:
         - `%(name)s`            Name of the logger (logging channel)
         - `%(levelno)s`         Numeric logging level for the message (DEBUG, INFO, WARNING, ERROR, CRITICAL)
         - `%(levelname)s`       Text logging level for the message ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
@@ -35,13 +39,13 @@ Inputs:
         - `%(process)d`         Process ID (if available)
         - `%(message)s`         The result of record.getMessage(), computed just as the record is emitted
 * datefmt
-	* date format for first column of logs, default `%Y/%m/%d %H:%M:%S`
+	* date format for first column of logs. default `%Y/%m/%d %H:%M:%S`
 * max_size
-	* max size of each log file in bytes, default `10MB` (10485760)
+	* max size of each log file in bytes. default `10MB` (10,485,760)
 * max_files
-	* max file count, default `10`
+	* max file count. default `10`
 * header
-	* header to prepend to csv files
+	* header to prepend to csv files. default `None`
 
 Getting started
 ---------------
@@ -61,15 +65,18 @@ from time import sleep
 
 filename = 'logs/log.csv'
 level = logging.INFO
-fmt = '%(asctime)s,%(message)s'
+custom_additional_levels = ['logs_a', 'logs_b', 'logs_c']
+fmt = '%(asctime)s,%(levelname)s,%(message)s'
 datefmt = '%Y/%m/%d %H:%M:%S'
 max_size = 1024  # 1 kilobyte
 max_files = 4  # 4 rotating files
-header = ['date', 'value_1', 'value_2']
+header = ['date', 'level', 'value_1', 'value_2']
 
 # Creat logger with csv rotating handler
 csvlogger = CsvLogger(filename=filename,
                       level=level,
+                      add_level_names=custom_additional_levels,
+                      add_level_nums=None,
                       fmt=fmt,
                       datefmt=datefmt,
                       max_size=max_size,
@@ -78,92 +85,98 @@ csvlogger = CsvLogger(filename=filename,
 
 # Log some records
 for i in range(10):
-    csvlogger.info([i, i * 2])
+    csvlogger.logs_a([i, i * 2])
     sleep(0.1)
 
 # You can log list or string
-csvlogger.info([1000.1, 2000.2])
+csvlogger.logs_b([1000.1, 2000.2])
 csvlogger.critical('3000,4000')
 
 # Log some more records to trigger rollover
 for i in range(50):
-    csvlogger.info([i * 2, float(i**2)])
+    csvlogger.logs_c([i * 2, float(i**2)])
     sleep(0.1)
 
 # Read and print all of the logs from file after logging
-all_logs = csvlogger.get_logs(evaluate=True)
+all_logs = csvlogger.get_logs(evaluate=False)
 for log in all_logs:
     print(log)
 ```
+
+`log_2.csv`:
+```csv
+date,level,value_1,value_2
+2022/01/31 15:49:53,logs_a,0,0
+2022/01/31 15:49:53,logs_a,1,2
+2022/01/31 15:49:53,logs_a,2,4
+2022/01/31 15:49:53,logs_a,3,6
+2022/01/31 15:49:53,logs_a,4,8
+2022/01/31 15:49:53,logs_a,5,10
+2022/01/31 15:49:53,logs_a,6,12
+2022/01/31 15:49:53,logs_a,7,14
+2022/01/31 15:49:53,logs_a,8,16
+2022/01/31 15:49:54,logs_a,9,18
+2022/01/31 15:49:54,logs_b,1000.1,2000.2
+2022/01/31 15:49:54,CRITICAL,3000,4000
+2022/01/31 15:49:54,logs_c,0,0.0
+2022/01/31 15:49:54,logs_c,2,1.0
+2022/01/31 15:49:54,logs_c,4,4.0
+2022/01/31 15:49:54,logs_c,6,9.0
+2022/01/31 15:49:54,logs_c,8,16.0
+2022/01/31 15:49:54,logs_c,10,25.0
+2022/01/31 15:49:54,logs_c,12,36.0
+2022/01/31 15:49:54,logs_c,14,49.0
+2022/01/31 15:49:54,logs_c,16,64.0
+2022/01/31 15:49:55,logs_c,18,81.0
+2022/01/31 15:49:55,logs_c,20,100.0
+2022/01/31 15:49:55,logs_c,22,121.0
+2022/01/31 15:49:55,logs_c,24,144.0
+2022/01/31 15:49:55,logs_c,26,169.0
+2022/01/31 15:49:55,logs_c,28,196.0
+2022/01/31 15:49:55,logs_c,30,225.0
+2022/01/31 15:49:55,logs_c,32,256.0
+```
+
 `log_1.csv`:
 ```csv
-date,value_1,value_2
-2021/10/25 12:32:57,0,0
-2021/10/25 12:32:57,1,2
-2021/10/25 12:32:57,2,4
-2021/10/25 12:32:57,3,6
-2021/10/25 12:32:57,4,8
-2021/10/25 12:32:57,5,10
-2021/10/25 12:32:57,6,12
-2021/10/25 12:32:57,7,14
-2021/10/25 12:32:58,8,16
-2021/10/25 12:32:58,9,18
-2021/10/25 12:32:58,1000.1,2000.2
-2021/10/25 12:32:58,3000,4000
-2021/10/25 12:32:58,0,0.0
-2021/10/25 12:32:58,2,1.0
-2021/10/25 12:32:58,4,4.0
-2021/10/25 12:32:58,6,9.0
-2021/10/25 12:32:58,8,16.0
-2021/10/25 12:32:58,10,25.0
-2021/10/25 12:32:58,12,36.0
-2021/10/25 12:32:58,14,49.0
-2021/10/25 12:32:59,16,64.0
-2021/10/25 12:32:59,18,81.0
-2021/10/25 12:32:59,20,100.0
-2021/10/25 12:32:59,22,121.0
-2021/10/25 12:32:59,24,144.0
-2021/10/25 12:32:59,26,169.0
-2021/10/25 12:32:59,28,196.0
-2021/10/25 12:32:59,30,225.0
-2021/10/25 12:32:59,32,256.0
-2021/10/25 12:32:59,34,289.0
-2021/10/25 12:33:00,36,324.0
-2021/10/25 12:33:00,38,361.0
-2021/10/25 12:33:00,40,400.0
-2021/10/25 12:33:00,42,441.0
-2021/10/25 12:33:00,44,484.0
-2021/10/25 12:33:00,46,529.0
+date,level,value_1,value_2
+2022/01/31 15:49:55,logs_c,34,289.0
+2022/01/31 15:49:55,logs_c,36,324.0
+2022/01/31 15:49:56,logs_c,38,361.0
+2022/01/31 15:49:56,logs_c,40,400.0
+2022/01/31 15:49:56,logs_c,42,441.0
+2022/01/31 15:49:56,logs_c,44,484.0
+2022/01/31 15:49:56,logs_c,46,529.0
+2022/01/31 15:49:56,logs_c,48,576.0
+2022/01/31 15:49:56,logs_c,50,625.0
+2022/01/31 15:49:56,logs_c,52,676.0
+2022/01/31 15:49:56,logs_c,54,729.0
+2022/01/31 15:49:57,logs_c,56,784.0
+2022/01/31 15:49:57,logs_c,58,841.0
+2022/01/31 15:49:57,logs_c,60,900.0
+2022/01/31 15:49:57,logs_c,62,961.0
+2022/01/31 15:49:57,logs_c,64,1024.0
+2022/01/31 15:49:57,logs_c,66,1089.0
+2022/01/31 15:49:57,logs_c,68,1156.0
+2022/01/31 15:49:57,logs_c,70,1225.0
+2022/01/31 15:49:57,logs_c,72,1296.0
+2022/01/31 15:49:57,logs_c,74,1369.0
+2022/01/31 15:49:58,logs_c,76,1444.0
+2022/01/31 15:49:58,logs_c,78,1521.0
+2022/01/31 15:49:58,logs_c,80,1600.0
+2022/01/31 15:49:58,logs_c,82,1681.0
+2022/01/31 15:49:58,logs_c,84,1764.0
+2022/01/31 15:49:58,logs_c,86,1849.0
 ```
 `log.csv`:
 ```csv
-date,value_1,value_2
-2021/10/25 12:33:00,48,576.0
-2021/10/25 12:33:00,50,625.0
-2021/10/25 12:33:00,52,676.0
-2021/10/25 12:33:00,54,729.0
-2021/10/25 12:33:01,56,784.0
-2021/10/25 12:33:01,58,841.0
-2021/10/25 12:33:01,60,900.0
-2021/10/25 12:33:01,62,961.0
-2021/10/25 12:33:01,64,1024.0
-2021/10/25 12:33:01,66,1089.0
-2021/10/25 12:33:01,68,1156.0
-2021/10/25 12:33:01,70,1225.0
-2021/10/25 12:33:01,72,1296.0
-2021/10/25 12:33:01,74,1369.0
-2021/10/25 12:33:02,76,1444.0
-2021/10/25 12:33:02,78,1521.0
-2021/10/25 12:33:02,80,1600.0
-2021/10/25 12:33:02,82,1681.0
-2021/10/25 12:33:02,84,1764.0
-2021/10/25 12:33:02,86,1849.0
-2021/10/25 12:33:02,88,1936.0
-2021/10/25 12:33:02,90,2025.0
-2021/10/25 12:33:02,92,2116.0
-2021/10/25 12:33:02,94,2209.0
-2021/10/25 12:33:03,96,2304.0
-2021/10/25 12:33:03,98,2401.0
+date,level,value_1,value_2
+2022/01/31 15:49:58,logs_c,88,1936.0
+2022/01/31 15:49:58,logs_c,90,2025.0
+2022/01/31 15:49:58,logs_c,92,2116.0
+2022/01/31 15:49:58,logs_c,94,2209.0
+2022/01/31 15:49:59,logs_c,96,2304.0
+2022/01/31 15:49:59,logs_c,98,2401.0
 ```
 Author
 -------
