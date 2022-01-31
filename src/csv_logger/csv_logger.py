@@ -10,12 +10,13 @@ from datetime import datetime
 
 class CsvFormatter(logging.Formatter):
     def format_msg(self, msg):
-        '''Format the msg to csv string'''
+        ''' format the msg to csv string from list if list '''
         if isinstance(msg, list):
             msg = ','.join(map(str, msg))
         return msg
 
     def format(self, record):
+        ''' run format_msg on record to get string before passing to Formatter '''
         record.msg = self.format_msg(record.msg)
         return logging.Formatter.format(self, record)
 
@@ -43,13 +44,13 @@ class CsvRotatingFileHandler(RotatingFileHandler):
             self.stream.write('%s\n' % self._header)
 
     def rotation_filename(self, default_name):
-        '''Make log files counter before the .csv extension'''
+        ''' make log files counter before the .csv extension '''
         s = default_name.rsplit('.', 2)
         return '{}_{:0{}d}.csv'.format(s[0], int(s[-1]),
                                        self.backupCount // 10 + 1)
 
     def doRollover(self):
-        ''' Prepend header string to each log file'''
+        ''' prepend header string to each log file '''
         RotatingFileHandler.doRollover(self)
         if self._header is None:
             return
@@ -73,7 +74,7 @@ class CsvLogger(logging.Logger):
         Args:
             filename (string): main log file name or path. if path, will create subfolders as needed
             level (logging level | str | int, optional): logging level for logs. Defaults to logging.INFO.
-            fmt (str, optional): output format, accepts parameters accepts 'asctime' 'message' 'levelname'. Defaults to '%(asctime)s,%(message)s'.
+            fmt (str, optional): output format, accepts parameters 'asctime' 'message' 'levelname'. Defaults to '%(asctime)s,%(message)s'.
             datefmt (str, optional): date format for first column of logs. Defaults to '%Y/%m/%d %H:%M:%S'.
             max_size (int, optional): max size of each log file in bytes. Defaults to 10485760.
             max_files (int, optional): max file count. Defaults to 10.
