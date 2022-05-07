@@ -95,6 +95,9 @@ class CsvLogger(logging.Logger):
         """
         self.filename = filename
         self.delimiter = delimiter
+        # if default fmt is still set but delimiter is not comma, replace with delimiter
+        if fmt == '%(asctime)s,%(message)s' and delimiter != ',':
+            fmt = f'%(asctime)s{delimiter}%(message)s'
         self.datefmt = datefmt
         if header and isinstance(header, str):
             header = header.split(delimiter)
