@@ -6,51 +6,52 @@ Simple class to log to csv using the logging rotating handler, output is a rolli
 
 ![csv-logger](https://github.com/Morrious/csv-logger/blob/prod/csv-logger.png?raw=true)
 
-Description
------------
-This library allows you to easily log information to CSV file format, in the same fashion as the logging package. This allows you to generate a rolling set of csv logs with a maximum  file size and file count.
+## Description
+
+This library allows you to easily log information to CSV file format, in the same fashion as the logging package. This allows you to generate a rolling set of csv logs with a maximum file size and file count.
 
 Inputs:
 
-* filename
-    * main log file name or path. if path, will create subfolders as needed
-* level
-	* logging level for logs, below which the logs will not be written to file. default `INFO`
-* add_level_names
-    * list fo strings, adds additional logging levels for custom log tagging. default: `[]`
-* add_level_nums
-    * assigns specific nums to `add_level_names`. default if None provided: `[100,99,98,..]`
-* fmt
-	* output format. default `%(asctime)s,%(message)s`. accepts:
-        - `%(name)s`            Name of the logger (logging channel)
-        - `%(levelno)s`         Numeric logging level for the message (DEBUG, INFO, WARNING, ERROR, CRITICAL)
-        - `%(levelname)s`       Text logging level for the message ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
-        - `%(pathname)s`        Full pathname of the source file where the logging call was issued (if available)
-        - `%(filename)s`        Filename portion of pathname
-        - `%(module)s`          Module (name portion of filename)
-        - `%(lineno)d`          Source line number where the logging call was issued (if available)
-        - `%(funcName)s`        Function name
-        - `%(created)f`         Time when the LogRecord was created (time.time() return value)
-        - `%(asctime)s`         Textual time when the LogRecord was created
-        - `%(msecs)d`           Millisecond portion of the creation time
-        - `%(relativeCreated)d` Time in milliseconds when the LogRecord was created, relative to the time the logging module was loaded (typically at application startup time)
-        - `%(thread)d`          Thread ID (if available)
-        - `%(threadName)s`      Thread name (if available)
-        - `%(process)d`         Process ID (if available)
-        - `%(message)s`         The result of record.getMessage(), computed just as the record is emitted
-* datefmt
-	* date format for first column of logs. default `%Y/%m/%d %H:%M:%S`
-* max_size
-	* max size of each log file in bytes. default `10MB` (10,485,760)
-* max_files
-	* max file count. default `10`
-* header
-	* header to prepend to csv files. default `None`
+- filename
+  - main log file name or path. if path, will create subfolders as needed
+- delimiter
+  - delimiter to use in the files. Defaults to `','`
+- level
+  - logging level for logs, below which the logs will not be written to file. default `INFO`
+- add_level_names
+  - list fo strings, adds additional logging levels for custom log tagging. default: `[]`
+- add_level_nums
+  - assigns specific nums to `add_level_names`. default if None provided: `[100,99,98,..]`
+- fmt
+  - output format. default `f'%(asctime)s,%(message)s'`. accepts:
+    - `%(name)s` Name of the logger (logging channel)
+    - `%(levelno)s` Numeric logging level for the message (DEBUG, INFO, WARNING, ERROR, CRITICAL)
+    - `%(levelname)s` Text logging level for the message ("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL")
+    - `%(pathname)s` Full pathname of the source file where the logging call was issued (if available)
+    - `%(filename)s` Filename portion of pathname
+    - `%(module)s` Module (name portion of filename)
+    - `%(lineno)d` Source line number where the logging call was issued (if available)
+    - `%(funcName)s` Function name
+    - `%(created)f` Time when the LogRecord was created (time.time() return value)
+    - `%(asctime)s` Textual time when the LogRecord was created
+    - `%(msecs)d` Millisecond portion of the creation time
+    - `%(relativeCreated)d` Time in milliseconds when the LogRecord was created, relative to the time the logging module was loaded (typically at application startup time)
+    - `%(thread)d` Thread ID (if available)
+    - `%(threadName)s` Thread name (if available)
+    - `%(process)d` Process ID (if available)
+    - `%(message)s` The result of record.getMessage(), computed just as the record is emitted
+- datefmt
+  - date format for first column of logs. default `%Y/%m/%d %H:%M:%S`
+- max_size
+  - max size of each log file in bytes. default `10MB` (10,485,760)
+- max_files
+  - max file count. default `10`
+- header
+  - header to prepend to csv files. default `None`
 
-Getting started
----------------
+## Getting started
 
-Install with ```pip3 install csv_logger```
+Install with `pip3 install csv_logger`
 
 Basic usage example below.
 
@@ -64,9 +65,10 @@ import logging
 from time import sleep
 
 filename = 'logs/log.csv'
+delimiter = ','
 level = logging.INFO
 custom_additional_levels = ['logs_a', 'logs_b', 'logs_c']
-fmt = '%(asctime)s,%(levelname)s,%(message)s'
+fmt = f'%(asctime)s{delimiter}%(levelname)s{delimiter}%(message)s'
 datefmt = '%Y/%m/%d %H:%M:%S'
 max_size = 1024  # 1 kilobyte
 max_files = 4  # 4 rotating files
@@ -74,6 +76,7 @@ header = ['date', 'level', 'value_1', 'value_2']
 
 # Creat logger with csv rotating handler
 csvlogger = CsvLogger(filename=filename,
+                      delimiter=delimiter,
                       level=level,
                       add_level_names=custom_additional_levels,
                       add_level_nums=None,
@@ -104,6 +107,7 @@ for log in all_logs:
 ```
 
 `log_2.csv`:
+
 ```csv
 date,level,value_1,value_2
 2022/01/31 15:49:53,logs_a,0,0
@@ -138,6 +142,7 @@ date,level,value_1,value_2
 ```
 
 `log_1.csv`:
+
 ```csv
 date,level,value_1,value_2
 2022/01/31 15:49:55,logs_c,34,289.0
@@ -168,7 +173,9 @@ date,level,value_1,value_2
 2022/01/31 15:49:58,logs_c,84,1764.0
 2022/01/31 15:49:58,logs_c,86,1849.0
 ```
+
 `log.csv`:
+
 ```csv
 date,level,value_1,value_2
 2022/01/31 15:49:58,logs_c,88,1936.0
@@ -178,14 +185,15 @@ date,level,value_1,value_2
 2022/01/31 15:49:59,logs_c,96,2304.0
 2022/01/31 15:49:59,logs_c,98,2401.0
 ```
-Author
--------
-* James Morris (https://james.pizza)
 
-License
--------
-* Free software: MIT license
+## Author
 
-Credits
----------
-* [Python CSV Rotating Logger gist](https://gist.github.com/arduino12/144c346c9f3ecc8175be45a2f6bda599) as starting point
+- James Morris (https://james.pizza)
+
+## License
+
+- Free software: MIT license
+
+## Credits
+
+- [Python CSV Rotating Logger gist](https://gist.github.com/arduino12/144c346c9f3ecc8175be45a2f6bda599) as starting point
