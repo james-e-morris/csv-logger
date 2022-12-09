@@ -134,3 +134,6 @@ dmypy.json
 
 # csv
 *.csv
+
+# mac
+**/.DS_Store
